@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from git import Repo
 import shutil
 from tempfile import TemporaryDirectory, TemporaryFile, gettempdir, NamedTemporaryFile
@@ -13,7 +15,7 @@ if __name__ == '__main__':
 
     # project_path = os.path.dirname(os.path.realpath(__file__))
     project_path = gettempdir()
-    work_dir = os.path.join(project_path, 'temp')
+    work_dir = TemporaryDirectory().name
     zip_path = os.path.join(project_path, 'temp.zip')
 
     start = timeit.default_timer()
@@ -23,10 +25,10 @@ if __name__ == '__main__':
     subprocess.check_call(f'npm install --prefix {work_dir}', shell=True)
     subprocess.check_call(f'npm run build --prefix {work_dir}', shell=True)
     zip_file = zipfile.ZipFile(zip_path, 'w')
-    zip_file.write(work_dir, compress_type=zipfile.ZIP_DEFLATED)
+    zip_file.write(os.path.join(work_dir, 'dist'), compress_type=zipfile.ZIP_DEFLATED)
     zip_file.close()
     shutil.rmtree(work_dir)
-    shutil.rmtree(zip_path)
+    os.remove(zip_path)
 
     stop = timeit.default_timer()
 
